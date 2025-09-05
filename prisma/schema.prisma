@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Family {
+  id                String          @id @default(cuid())
+  familyId          String          @unique
+  barangay          String
+  dateOfEvacuation  DateTime
+  evacuationSite    String
+  disasterType      String
+  assignedTent      String?
+  
+  // Head of Family Information
+  familyName        String
+  givenName         String
+  middleName        String?
+  completeAddress   String
+  age               Int
+  occupation        String
+  monthlyIncome     String
+  
+  // Terms acceptance
+  termsAccepted     Boolean         @default(false)
+  
+  // Relationships
+  members           FamilyMember[]
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("families")
+}
+
+model FamilyMember {
+  id           String  @id @default(cuid())
+  familyId     String
+  name         String
+  age          Int
+  relation     String
+  sex          String
+  occupation   String?
+  health       String
+  code         String
+  
+  // Relationship
+  family       Family  @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("family_members")
+}
